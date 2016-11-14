@@ -449,6 +449,7 @@ public class BleDevice extends BleNode
     {
         if (!isAny(DISCONNECTED, DISCONNECTING))
         {
+            getManager().mTaskManager.cancelTasks(this);
             getManager().mTaskManager.add(new P_Task_Disconnect(this, null));
         }
     }
@@ -457,7 +458,7 @@ public class BleDevice extends BleNode
     {
         if (!isAny(DISCONNECTED, DISCONNECTING))
         {
-            getManager().mTaskManager.add(new P_Task_Disconnect(this, null, P_TaskPriority.LOW));
+            getManager().mTaskManager.add(new P_Task_Disconnect(this, null, P_TaskPriority.TRIVIAL));
         }
     }
 

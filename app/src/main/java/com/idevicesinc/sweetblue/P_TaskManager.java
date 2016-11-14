@@ -2,6 +2,8 @@ package com.idevicesinc.sweetblue;
 
 
 import com.idevicesinc.sweetblue.utils.Utils_String;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -209,6 +211,16 @@ public final class P_TaskManager
         if (task != null)
         {
             failTask(task, immediate);
+        }
+    }
+
+    public final void cancelTasks(BleDevice device)
+    {
+        ArrayList<P_Task> tasks = findDeviceTasks(device);
+        final int size = tasks.size();
+        for (int i = 0; i < size; i++)
+        {
+            cancel(tasks.get(i));
         }
     }
 
@@ -521,6 +533,30 @@ public final class P_TaskManager
         {
             getManager().getLogger().i(toString());
         }
+    }
+
+    private ArrayList<P_Task> findDeviceTasks(BleDevice device)
+    {
+        final ArrayList<P_Task> list = new ArrayList<>(0);
+        final P_Task current = mCurrent;
+        int size = mTaskQueue.size();
+        P_Task task;
+        for (int i = 0; i < size; i++)
+        {
+            task = mTaskQueue.get(i);
+            if (task.getDevice() != null && task.getDevice().equals(device))
+            {
+                list.add(task);
+            }
+        }
+        if (current != null)
+        {
+            if (current.getDevice() != null && current.getDevice().equals(device))
+            {
+                list.add(current);
+            }
+        }
+        return list;
     }
 
     private P_Task findTask(Class<? extends P_Task> clazz, BleManager mgr, BleDevice device, BleServer server)
