@@ -745,6 +745,7 @@ public class BleDevice extends BleNode
 
     private void resetToDisconnected()
     {
+        mReconnectManager.reset();
         stateTracker().set(P_StateTracker.E_Intent.UNINTENTIONAL, BleStatuses.GATT_STATUS_NOT_APPLICABLE, DISCONNECTED, true, ADVERTISING, true, DISCOVERED, true);
         if (mGattManager == null)
         {
