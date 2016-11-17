@@ -26,6 +26,7 @@ import com.idevicesinc.sweetblue.utils.Utils;
 import com.idevicesinc.sweetblue.utils.Utils_Rssi;
 import com.idevicesinc.sweetblue.utils.Utils_String;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -227,22 +228,50 @@ public class BleDevice extends BleNode
 
     public int getTxPower()
     {
-        return mScanInfo.getTxPower().value;
+        if (mScanInfo != null)
+        {
+            return mScanInfo.getTxPower().value;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     public int getManufacturerId()
     {
-        return mScanInfo.getManufacturerId();
+        if (mScanInfo != null)
+        {
+            return mScanInfo.getManufacturerId();
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     public byte[] getManufacturerData()
     {
-        return mScanInfo.getManufacturerData();
+        if (mScanInfo != null)
+        {
+            return mScanInfo.getManufacturerData();
+        }
+        else
+        {
+            return new byte[0];
+        }
     }
 
     public Map<UUID, byte[]> getAdvertisedServiceData()
     {
-        return mScanInfo.getServiceData();
+        if (mScanInfo != null)
+        {
+            return mScanInfo.getServiceData();
+        }
+        else
+        {
+            return new HashMap<>(0);
+        }
     }
 
     public boolean is(BleDeviceState state)
