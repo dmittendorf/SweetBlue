@@ -215,7 +215,13 @@ final class P_ScanManager
 
     private void stopScanPreLollipop()
     {
-        mManager.getNativeAdapter().stopLeScan(mPreLollipopScanCallback);
+        try
+        {
+            mManager.getNativeAdapter().stopLeScan(mPreLollipopScanCallback);
+        } catch (Exception e)
+        {
+            mManager.getLogger().e("Got an exception (" + e.getClass().getSimpleName() + ") with a message of " + e.getMessage() + " when trying to stop a pre-lollipop scan!");
+        }
     }
 
     private void stopScanPostLollipop()
