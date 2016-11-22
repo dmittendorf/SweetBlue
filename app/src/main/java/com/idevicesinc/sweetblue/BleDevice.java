@@ -479,7 +479,7 @@ public class BleDevice extends BleNode
         if (is(DISCONNECTING))
         {
             P_Task disc = getManager().mTaskManager.findTask(P_Task_Disconnect.class, null, this, null);
-            if (disc.isNull())
+            if (disc == null || disc.isNull())
             {
                 stateTracker().update(P_StateTracker.E_Intent.UNINTENTIONAL, BleStatuses.GATT_STATUS_NOT_APPLICABLE, DISCONNECTING, false);
             }
