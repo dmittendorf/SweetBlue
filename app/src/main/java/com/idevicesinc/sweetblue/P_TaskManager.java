@@ -559,7 +559,7 @@ public final class P_TaskManager
         return list;
     }
 
-    private P_Task findTask(Class<? extends P_Task> clazz, BleManager mgr, BleDevice device, BleServer server)
+    P_Task findTask(Class<? extends P_Task> clazz, BleManager mgr, BleDevice device, BleServer server)
     {
         final P_Task current = mCurrent;
         int size = mTaskQueue.size();
