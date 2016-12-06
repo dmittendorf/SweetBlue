@@ -1,5 +1,6 @@
 package com.idevicesinc.sweetblue.utils;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -12,6 +13,8 @@ import android.os.*;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import com.idevicesinc.sweetblue.BleDevice;
+import com.idevicesinc.sweetblue.annotations.Advanced;
 
 
 /**
@@ -39,6 +42,25 @@ public class Utils
 
 	public static boolean isKitKat() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+	}
+
+	/**
+	 * This method is used internally when {@link com.idevicesinc.sweetblue.BleDeviceConfig#useGattRefresh} is set to <code>true</code>. Sometimes,
+	 * it may be necessary for you to call this yourself, so use this at your own risk, as calling this may end up causing more issues.
+     */
+	@Advanced
+	public static boolean gattRefresh(BleDevice device)
+	{
+		try
+		{
+			Method mRefreshMethod = device.getNativeGatt().getClass().getMethod("refresh", (Class[]) null);
+			mRefreshMethod.invoke(device.getNativeGatt(), (Object[]) null);
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+		return true;
 	}
 
 	public static boolean isLocationEnabledForScanning_byManifestPermissions(final Context context)

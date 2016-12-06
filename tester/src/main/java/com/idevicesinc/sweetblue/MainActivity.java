@@ -192,6 +192,14 @@ public class MainActivity extends AppCompatActivity
         {
             menu.add(0, 0, 0, "Disconnect");
         }
+        if (mDevices.get(info.position).is(BleDeviceState.UNBONDED))
+        {
+            menu.add(1, 1, 1, "Bond");
+        }
+        if (mDevices.get(info.position).isAny(BleDeviceState.BONDED, BleDeviceState.BONDING))
+        {
+            menu.add(2, 2, 2, "Unbond");
+        }
     }
 
     @Override public boolean onContextItemSelected(MenuItem item)
@@ -201,6 +209,12 @@ public class MainActivity extends AppCompatActivity
         {
             case 0:
                 mDevices.get(info.position).disconnect();
+                return true;
+            case 1:
+                mDevices.get(info.position).bond();
+                return true;
+            case 2:
+                mDevices.get(info.position).unbond();
                 return true;
         }
         return super.onContextItemSelected(item);

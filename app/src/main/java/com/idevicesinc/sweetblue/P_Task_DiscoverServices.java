@@ -3,6 +3,7 @@ package com.idevicesinc.sweetblue;
 
 import com.idevicesinc.sweetblue.listeners.DeviceConnectionFailListener;
 import com.idevicesinc.sweetblue.utils.BleStatuses;
+import com.idevicesinc.sweetblue.utils.Utils;
 
 import java.lang.reflect.Method;
 
@@ -56,13 +57,6 @@ final class P_Task_DiscoverServices extends P_Task_RequiresConnection
 
     private void refresh()
     {
-        try
-        {
-            Method mRefreshMethod = getDevice().getNativeGatt().getClass().getMethod("refresh", (Class[]) null);
-            mRefreshMethod.invoke(getDevice().getNativeGatt(), (Object[]) null);
-        }
-        catch (Exception e)
-        {
-        }
+        Utils.gattRefresh(getDevice());
     }
 }

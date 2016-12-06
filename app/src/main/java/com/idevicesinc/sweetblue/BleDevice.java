@@ -379,6 +379,24 @@ public class BleDevice extends BleNode
         // TODO - Implement this
     }
 
+    // TODO - Implement early outs, and error cases, and listeners
+    public void bond()
+    {
+        if (!mGattManager.isBonded() || mGattManager.isBonding())
+        {
+            getManager().mTaskManager.add(new P_Task_Bond(this, null));
+        }
+    }
+
+    // TODO - Implement early outs, and error cases, and listeners
+    public void unbond()
+    {
+        if (mGattManager.isBonded() || mGattManager.isBonding())
+        {
+            getManager().mTaskManager.add(new P_Task_Unbond(this, null));
+        }
+    }
+
     public void connect(BleTransaction.Auth authTxn)
     {
         connect(authTxn, getConfig().defaultInitTxn, null, null);
