@@ -329,8 +329,7 @@ final class P_GattManager
             {
                 boolean success = Utils.isSuccess(status);
                 ReadWriteListener.Status mtuStatus = success ? ReadWriteListener.Status.SUCCESS : ReadWriteListener.Status.REMOTE_GATT_FAILURE;
-                ReadWriteListener.ReadWriteEvent event = P_EventFactory.newReadWriteEvent(mDevice, ReadWriteListener.Type.WRITE, mDevice.getRssi(),
-                        mtuStatus, status, 0, 0, true);
+                ReadWriteListener.ReadWriteEvent event = P_EventFactory.newReadWriteEvent(mDevice, mtu, mtuStatus, status, 0, 0, true);
                 task.onMtuChangeResult(event);
             }
 

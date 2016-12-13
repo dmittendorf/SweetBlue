@@ -39,6 +39,11 @@ public final class P_EventFactory
         return new ReadWriteListener.ReadWriteEvent(device, type, rssi, status, gattStatus, totalTime, transitTime, solicited);
     }
 
+    public static ReadWriteListener.ReadWriteEvent newReadWriteEvent(BleDevice device, int mtu, ReadWriteListener.Status status, int gattStatus, double totalTime, double transitTime, boolean solicited)
+    {
+        return new ReadWriteListener.ReadWriteEvent(device, mtu, status, gattStatus, totalTime, transitTime, solicited);
+    }
+
     public static DiscoveryListener.DiscoveryEvent newDiscoveryEvent(BleDevice device, DiscoveryListener.LifeCycle lifeCycle)
     {
         return new DiscoveryListener.DiscoveryEvent(device, lifeCycle);
