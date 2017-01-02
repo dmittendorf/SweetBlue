@@ -224,6 +224,7 @@ final class P_GattManager
                     final P_Task_Disconnect disconnect = getManager().mTaskManager.getCurrent(P_Task_Disconnect.class, mDevice);
                     if (disconnect != null)
                     {
+                        disconnect.succeed();
                         onDeviceDisconnected();
                     }
                     else

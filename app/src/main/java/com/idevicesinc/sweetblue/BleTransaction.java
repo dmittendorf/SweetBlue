@@ -69,7 +69,7 @@ public abstract class BleTransaction
         return false;
     }
 
-    interface TxnEndListener
+    public interface TxnEndListener
     {
         void onTxnEnded(BleTransaction txn, EndReason endReason);
 

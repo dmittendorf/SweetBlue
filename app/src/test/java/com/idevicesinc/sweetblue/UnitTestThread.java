@@ -9,6 +9,7 @@ public class UnitTestThread extends Thread
     private final UnitTestRunnable testRunnable;
     private boolean mRunning = true;
     private BleManager mManager;
+    private Looper mLooper;
 
 
     public UnitTestThread(UnitTestRunnable testRunnable)
@@ -17,9 +18,15 @@ public class UnitTestThread extends Thread
         this.testRunnable = testRunnable;
     }
 
+    public Looper getLooper()
+    {
+        return mLooper;
+    }
+
     @Override public void run()
     {
         Looper.prepare();
+        mLooper = Looper.myLooper();
         if (testRunnable != null)
         {
             mManager = testRunnable.setup(Looper.myLooper());
