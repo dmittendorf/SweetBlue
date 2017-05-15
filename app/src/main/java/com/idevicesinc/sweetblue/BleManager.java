@@ -228,7 +228,6 @@ public final class BleManager
 	private long m_timeTurnedOn = 0;
 	private long m_lastTaskExecution;
 	private long m_currentTick;
-	private boolean m_doingInfiniteScan = false;
 	private boolean m_isForegrounded = false;
 	private boolean m_ready = false;
 
@@ -832,12 +831,9 @@ public final class BleManager
 		m_config.autoScanActiveTime = scanActiveTime;
 		m_config.autoScanPauseInterval = scanPauseTime;
 
-		if( Interval.isEnabled(m_config.autoScanActiveTime) )
+		if( doAutoScan() )
 		{
-			if( doAutoScan() )
-			{
-				startScan_private(new ScanOptions().scanFor(m_config.autoScanActiveTime).asPoll(true));
-			}
+			startScan_private(new ScanOptions().scanPeriodically(m_config.autoScanActiveTime, m_config.autoScanPauseInterval));
 		}
 	}
 
@@ -860,7 +856,7 @@ public final class BleManager
 	{
 		m_config.autoScanActiveTime = Interval.DISABLED;
 
-		if( false == m_doingInfiniteScan )
+		if( false == m_scanManager.isInfiniteScan() )
 		{
 			this.stopScan();
 		}
@@ -972,7 +968,7 @@ public final class BleManager
 	{
 		showScanWarningIfNeeded();
 
-		return startScan_private(new ScanOptions().scanFor(scanTime).withScanFilter(filter).withDiscoveryListener(discoveryListener).asPoll(false));
+		return startScan_private(new ScanOptions().scanFor(scanTime).withScanFilter(filter).withDiscoveryListener(discoveryListener));
 	}
 
 	public final boolean startScan(ScanOptions options)
@@ -1016,33 +1012,17 @@ public final class BleManager
 //    {
 	final boolean startScan_private(ScanOptions options)
 	{
-		m_scanManager.resetTimeNotScanning();
-		options.m_scanTime = options.m_scanTime.secs() < 0.0 ? Interval.INFINITE : options.m_scanTime;
+		if (m_taskQueue.isInQueue(P_Task_Scan.class, this))
+		{
+			getLogger().w("A startScan method was called when there's already a scan task in the queue!");
+			return false;
+		}
 
 		if( false == isBluetoothEnabled() )
 		{
 			m_logger.e(BleManager.class.getSimpleName() + " is not " + ON + "! Please use the turnOn() method first.");
 
 			return false;
-		}
-
-		m_doingInfiniteScan = options.m_scanTime.equals(Interval.INFINITE);
-
-		if( options.m_discoveryListener != null )
-		{
-			setListener_Discovery(options.m_discoveryListener);
-		}
-
-
-		if (options.m_scanFilter != null)
-		{
-			m_filterMngr.add(options.m_scanFilter);
-		}
-
-		if (options.m_isPeriodic)
-		{
-			m_config.autoScanActiveTime = options.m_scanTime;
-			m_config.autoScanPauseInterval = options.m_pauseTime;
 		}
 
 		final P_Task_Scan scanTask = m_taskQueue.get(P_Task_Scan.class, this);
@@ -1057,13 +1037,34 @@ public final class BleManager
 
 			m_stateTracker.append(BleManagerState.STARTING_SCAN, E_Intent.INTENTIONAL, BleStatuses.GATT_STATUS_NOT_APPLICABLE);
 
+			m_scanManager.resetTimeNotScanning();
+			options.m_scanTime = options.m_scanTime.secs() < 0.0 ? Interval.INFINITE : options.m_scanTime;
+			m_scanManager.setInfiniteScan(options.m_scanTime.equals(Interval.INFINITE));
+
+			if( options.m_discoveryListener != null )
+			{
+				setListener_Discovery(options.m_discoveryListener);
+			}
+
+
+			if (options.m_scanFilter != null)
+			{
+				m_filterMngr.add(options.m_scanFilter);
+			}
+
+			if (options.m_isPeriodic)
+			{
+				m_config.autoScanActiveTime = options.m_scanTime;
+				m_config.autoScanPauseInterval = options.m_pauseTime;
+			}
+
             PE_TaskPriority pri = options.m_isPriorityScan ? PE_TaskPriority.CRITICAL : null;
 
 			boolean startScan = true;
 
 			if (options.m_isPeriodic)
 			{
-				if (!Interval.isEnabled(m_config.autoScanActiveTime) && !doAutoScan() )
+				if (!doAutoScan() )
 				{
 					startScan = false;
 				}
@@ -1071,7 +1072,7 @@ public final class BleManager
 
 			if (startScan)
 			{
-				m_taskQueue.add(new P_Task_Scan(this, m_listeners.getScanTaskListener(), options.m_scanTime.secs(), options.m_isPoll, pri));
+				m_taskQueue.add(new P_Task_Scan(this, m_listeners.getScanTaskListener(), options.m_scanTime.secs(), pri));
 			}
 		}
 
@@ -1574,7 +1575,7 @@ public final class BleManager
 	 */
 	public final void stopScan()
 	{
-		m_doingInfiniteScan = false;
+		m_scanManager.setInfiniteScan(false);
 
 		stopScan_private(E_Intent.INTENTIONAL);
 	}
@@ -2021,6 +2022,16 @@ public final class BleManager
 	public final void removeDeviceFromCache(BleDevice device)
 	{
 		m_deviceMngr.remove(device, m_deviceMngr_cache);
+	}
+
+	/**
+	 * Removes all {@link BleDevice}s from SweetBlue's internal device cache list. You should never have to call this
+	 * yourself (and probably shouldn't), but it's here for flexibility.
+	 */
+	@Advanced
+	public final void removeAllDevicesFromCache()
+	{
+		m_deviceMngr.removeAll(m_deviceMngr_cache);
 	}
 
 	/**
@@ -2622,7 +2633,7 @@ public final class BleManager
 
 	final boolean doAutoScan()
 	{
-		return is(ON) && (m_config.autoScanDuringOta || !m_deviceMngr.hasDevice(BleDeviceState.PERFORMING_OTA));
+		return is(ON) && Interval.isEnabled(m_config.autoScanActiveTime) && (m_config.autoScanDuringOta || !m_deviceMngr.hasDevice(BleDeviceState.PERFORMING_OTA));
 	}
 
 	final void setBleScanReady()

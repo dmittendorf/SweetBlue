@@ -3,6 +3,8 @@ package com.idevicesinc.sweetblue;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -24,6 +26,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import com.idevicesinc.sweetblue.tester.R;
+import com.idevicesinc.sweetblue.utils.Utils;
+import com.idevicesinc.sweetblue.utils.Utils_Reflection;
 import com.idevicesinc.sweetblue.utils.Utils_String;
 
 import org.reactivestreams.Subscription;
@@ -121,6 +125,7 @@ public class MainActivity extends Activity
                         }
                     }
                 });
+
             }
         });
         mStopScan = (Button) findViewById(R.id.stopScan);
@@ -133,17 +138,21 @@ public class MainActivity extends Activity
             }
         });
 
+        mLogger = new DebugLogger(250);
+
         BleManagerConfig config = new BleManagerConfig();
         config.loggingEnabled = true;
-        config.scanApi = BleScanApi.PRE_LOLLIPOP;
-        config.saveNameChangesToDisk = false;
+        config.logger = mLogger;
+        config.scanApi = BleScanApi.POST_LOLLIPOP;
         config.runOnMainThread = false;
+        config.reconnectFilter = new BleNodeConfig.DefaultReconnectFilter(Interval.ONE_SEC, Interval.secs(3.0), Interval.FIVE_SECS, Interval.secs(45));
         config.uhOhCallbackThrottle = Interval.secs(60.0);
+
         config.defaultScanFilter = new BleManagerConfig.ScanFilter()
         {
             @Override public Please onEvent(ScanEvent e)
             {
-                return Please.acknowledgeIf(e.name_normalized().contains("sc") || e.name_normalized().contains("smartcap"));
+                return Please.acknowledgeIf(e.name_normalized().contains("tag"));
             }
         };
 

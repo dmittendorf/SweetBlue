@@ -3667,6 +3667,11 @@ public final class BleDevice extends BleNode
         return m_pollMngr;
     }
 
+    final void onLongTermReconnectTimeOut()
+    {
+        m_connectionFailMngr.onLongTermTimedOut();
+    }
+
     final void onNewlyDiscovered(final P_NativeDeviceLayer device_native, final BleManagerConfig.ScanFilter.ScanEvent scanEvent_nullable, int rssi, byte[] scanRecord_nullable, final BleDeviceOrigin origin)
     {
         m_origin_latest = origin;
@@ -3898,14 +3903,18 @@ public final class BleDevice extends BleNode
 
         final Object[] extraBondingStates;
 
+        boolean needsBond = false;
+
         if (is(UNBONDED) && Utils.isKitKat())
         {
             final boolean tryBondingWhileDisconnected = BleDeviceConfig.bool(conf_device().tryBondingWhileDisconnected, conf_mngr().tryBondingWhileDisconnected);
             final boolean tryBondingWhileDisconnected_manageOnDisk = BleDeviceConfig.bool(conf_device().tryBondingWhileDisconnected_manageOnDisk, conf_mngr().tryBondingWhileDisconnected_manageOnDisk);
-            final boolean doPreBond = getManager().m_diskOptionsMngr.loadNeedsBonding(getMacAddress(), tryBondingWhileDisconnected_manageOnDisk);
+            needsBond = Utils.phoneHasBondingIssues() && BleDeviceConfig.bool(conf_device().alwaysBondOnConnect, conf_mngr().alwaysBondOnConnect);
+            final boolean doPreBond = getManager().m_diskOptionsMngr.loadNeedsBonding(getMacAddress(), tryBondingWhileDisconnected_manageOnDisk) || needsBond;
 
             if (doPreBond && tryBondingWhileDisconnected)
             {
+                needsBond = false;
                 bond_justAddTheTask(E_TransactionLockBehavior.PASSES);
 
                 extraBondingStates = P_BondManager.OVERRIDE_BONDING_STATES;
@@ -3929,6 +3938,12 @@ public final class BleDevice extends BleNode
         }
 
         queue().add(new P_Task_Connect(this, m_taskStateListener));
+
+        if (needsBond)
+        {
+            bond_justAddTheTask(E_TransactionLockBehavior.PASSES);
+        }
+
 
         onConnecting(/* definitelyExplicit= */true, isReconnect, extraBondingStates, /*bleConnect=*/true);
     }
@@ -4080,6 +4095,11 @@ public final class BleDevice extends BleNode
         }
 
         m_txnMngr.cancelAllTransactions();
+
+        if (Utils.phoneHasBondingIssues())
+        {
+            getTaskQueue().clearQueueOf(P_Task_Bond.class, this, getTaskQueue().getSize());
+        }
 
         if (wasConnecting)
         {
