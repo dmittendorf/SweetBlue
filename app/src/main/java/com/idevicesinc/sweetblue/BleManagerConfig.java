@@ -104,6 +104,13 @@ public class BleManagerConfig extends BleDeviceConfig
 	@com.idevicesinc.sweetblue.annotations.Advanced
 	public boolean loggingEnabled							= false;
 
+	/**
+	 * Default is {@link LogType#allLogs()} - This setting allows you to customize the logs that get printed
+	 * from SweetBlue.
+	 */
+	@com.idevicesinc.sweetblue.annotations.Advanced
+	public int logTypeMask									= LogType.allLogs();
+
 
 	/**
 	 * Default is {@link DefaultLogger} - which prints the log statements to Android's logcat. If you want to
