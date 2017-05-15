@@ -106,8 +106,7 @@ public class MainActivity extends Activity
         {
             @Override public void onClick(View v)
             {
-                //mgr.startPeriodicScan(Interval.FIVE_SECS, Interval.ONE_SEC);
-                ScanOptions options = new ScanOptions().scanPeriodically(Interval.FIVE_SECS, Interval.ONE_SEC).withScanFilter(new BleManagerConfig.ScanFilter()
+                ScanOptions options = new ScanOptions().scanPeriodically(Interval.TEN_SECS, Interval.ONE_SEC).withScanFilter(new BleManagerConfig.ScanFilter()
                 {
                     @Override public Please onEvent(ScanEvent e)
                     {
