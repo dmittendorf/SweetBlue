@@ -260,7 +260,7 @@ final class P_Logger
 	{
 		if( m_gattConnStates != null )  return;
 		
-		m_gattConnStates = new HashMap<Integer, String>();
+		m_gattConnStates = new HashMap<>();
 		
 		initFromReflection(BluetoothProfile.class, "STATE_", m_gattConnStates);
 	}
@@ -355,7 +355,7 @@ final class P_Logger
 	{
 		if( m_unbondReasonCodes != null )  return;
 		
-		m_unbondReasonCodes = new HashMap<Integer, String>();
+		m_unbondReasonCodes = new HashMap<>();
 		
 		initFromReflection(BluetoothDevice.class, "UNBOND_REASON_", m_unbondReasonCodes);
 		initFromReflection(BleStatuses.class, "BOND_FAIL_REASON", m_unbondReasonCodes);

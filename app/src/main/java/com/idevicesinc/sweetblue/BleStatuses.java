@@ -95,6 +95,10 @@ public final class BleStatuses
      */
     public static final int UNBOND_REASON_REMOTE_AUTH_CANCELED = 8;
 
+	/**
+	 * An existing bond was explicitly revoked
+	 */
+	public static final int UNBOND_REASON_REMOVED = 9;
 
 
 
