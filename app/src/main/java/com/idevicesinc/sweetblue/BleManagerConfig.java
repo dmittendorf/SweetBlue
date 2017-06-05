@@ -96,26 +96,21 @@ public class BleManagerConfig extends BleDeviceConfig
 	 * was for setting a time lower than this, so here's a TODO to try to remember that.
 	 */
 	static final double MAX_CLASSIC_SCAN_TIME							= 7.0;
-	
-	/**
-	 * Default is <code>false</code> - basically only useful for developers working on the library itself.
-	 * May also be useful for providing context when reporting bugs.
-	 */
-	@com.idevicesinc.sweetblue.annotations.Advanced
-	public boolean loggingEnabled							= false;
 
 	/**
-	 * Default is {@link LogType#allLogs()} - This setting allows you to customize the logs that get printed
-	 * from SweetBlue.
+	 * Default is {@link LogOptions#OFF} - prints out logs relating to SweetBlue, and native callbacks for
+	 * Bluetooth. This may be useful for providing context when reporting bugs.
+	 *
+	 * See {@link LogOptions}, {@link LogOptions#OFF}, and {@link LogOptions#ALL_ON}
 	 */
 	@com.idevicesinc.sweetblue.annotations.Advanced
-	public int logTypeMask									= LogType.allLogs();
+	public LogOptions logOptions							= LogOptions.OFF;
 
 
 	/**
 	 * Default is {@link DefaultLogger} - which prints the log statements to Android's logcat. If you want to
 	 * pipe the log statements elsewhere, create a class which implements {@link SweetLogger}, and set this field
-	 * with an instance of it. If {@link #loggingEnabled} is not set, then this option will not affect anything.
+	 * with an instance of it. If {@link #logOptions} is {@link LogOptions#OFF}, then this option will not affect anything.
 	 */
 	@com.idevicesinc.sweetblue.annotations.Advanced
 	public SweetLogger logger						= new DefaultLogger();
@@ -467,7 +462,7 @@ public class BleManagerConfig extends BleDeviceConfig
 
 
 	/**
-	 * Used if {@link #loggingEnabled} is <code>true</code>. Gives threads names so they are more easily identifiable.
+	 * Used if {@link #logOptions} is not {@link LogOptions#OFF}. Gives threads names so they are more easily identifiable.
 	 */
 	@com.idevicesinc.sweetblue.annotations.Advanced
 	@Nullable(Prevalence.NORMAL)
@@ -478,7 +473,7 @@ public class BleManagerConfig extends BleDeviceConfig
 	};
 	
 	/**
-	 * Default is <code>null</code> - optional, only used if {@link #loggingEnabled} is true. Provides a look-up table
+	 * Default is <code>null</code> - optional, only used if {@link #logOptions} is not {@link LogOptions#OFF}. Provides a look-up table
 	 * so logs can show the name associated with a {@link UUID} along with its numeric string.
 	 */
 	@Nullable(Prevalence.NORMAL)
@@ -842,15 +837,22 @@ public class BleManagerConfig extends BleDeviceConfig
 	 * Convenience constructor that populates {@link #uuidNameMaps} with {@link Uuids}
 	 * using {@link ReflectionUuidNameMap} if logging is enabled.
 	 * 
-	 * @param loggingEnabled_in Sets {@link #loggingEnabled}.
+	 * @param loggingEnabled_in Sets {@link #logOptions} to {@link LogOptions#ALL_ON} if <code>true</code>, {@link LogOptions#OFF} if <code>false</code>.
 	 */
 	protected BleManagerConfig(boolean loggingEnabled_in)
 	{
-		this.loggingEnabled = loggingEnabled_in;
-		
-		if( this.loggingEnabled )
+		if (loggingEnabled_in)
 		{
-			uuidNameMaps = new ArrayList<UuidNameMap>();
+			logOptions = LogOptions.ALL_ON;
+		}
+		else
+		{
+			logOptions = LogOptions.OFF;
+		}
+
+		if( loggingEnabled_in )
+		{
+			uuidNameMaps = new ArrayList<>();
 			uuidNameMaps.add(new ReflectionUuidNameMap(Uuids.class));
 		}
 	}

@@ -17,7 +17,7 @@ public final class ManagerStateTest extends BaseBleUnitTest
     @Test
     public void onToOffTest() throws Exception
     {
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
 
         m_mgr.setConfig(m_config);
 
@@ -27,7 +27,7 @@ public final class ManagerStateTest extends BaseBleUnitTest
 
         m_mgr.setListener_State(new ManagerStateListener()
         {
-            @Override public void onEvent(BleManager.StateListener.StateEvent e)
+            @Override public void onEvent(ManagerStateListener.StateEvent e)
             {
                 if (e.didEnter(BleManagerState.TURNING_OFF))
                 {
@@ -48,7 +48,7 @@ public final class ManagerStateTest extends BaseBleUnitTest
     @Test
     public void onToOffToOnTest() throws Exception
     {
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
 
         m_mgr.setConfig(m_config);
 
@@ -58,7 +58,7 @@ public final class ManagerStateTest extends BaseBleUnitTest
 
         m_mgr.setListener_State(new ManagerStateListener()
         {
-            @Override public void onEvent(BleManager.StateListener.StateEvent e)
+            @Override public void onEvent(ManagerStateListener.StateEvent e)
             {
                 if (e.didEnter(BleManagerState.TURNING_OFF))
                 {
@@ -87,7 +87,7 @@ public final class ManagerStateTest extends BaseBleUnitTest
 //    @Test
     public void turningOffToTurningOnTest() throws Exception
     {
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         final DontTurnOffManagerLayer layer = new DontTurnOffManagerLayer();
         m_config.nativeManagerLayer = layer;
 
@@ -97,7 +97,7 @@ public final class ManagerStateTest extends BaseBleUnitTest
 
         m_mgr.setListener_State(new ManagerStateListener()
         {
-            @Override public void onEvent(BleManager.StateListener.StateEvent e)
+            @Override public void onEvent(ManagerStateListener.StateEvent e)
             {
                 if (e.didEnter(BleManagerState.TURNING_OFF))
                 {

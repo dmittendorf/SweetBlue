@@ -7,6 +7,8 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
+import android.util.Log;
+
 import com.idevicesinc.sweetblue.BondListener.Status;
 import com.idevicesinc.sweetblue.NodeConnectionFailListener.AutoConnectUsage;
 import com.idevicesinc.sweetblue.PA_StateTracker.E_Intent;
@@ -121,6 +123,8 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 
 	@Override public void onConnectionStateChange(final BluetoothGatt gatt, final int gattStatus, final int newState)
 	{
+		m_logger.log_status_native(m_device.getMacAddress(), gattStatus, m_logger.gattConn(newState));
+
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -135,7 +139,6 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 		//--- DRK > NOTE: For some devices disconnecting by turning off the peripheral comes back with a status of 8, which is BluetoothGatt.GATT_SERVER.
 		//---				For that same device disconnecting from the app the status is 0. Just an FYI to future developers in case they want to distinguish
 		//---				between the two as far as user intent or something.
-		m_logger.log_status(gattStatus, m_logger.gattConn(newState));
 
 		if (newState == BluetoothProfile.STATE_DISCONNECTED )
 		{
@@ -247,6 +250,8 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 
 	@Override public void onServicesDiscovered(final BluetoothGatt gatt, final int gattStatus)
 	{
+		m_logger.log_status_native(m_device.getMacAddress(), gattStatus);
+
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -258,7 +263,6 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 
 	private void onServicesDiscovered_updateThread(final BluetoothGatt gatt, final int gattStatus)
 	{
-		m_logger.log_status(gattStatus);
 
 		if( Utils.isSuccess(gattStatus) )
 		{
@@ -277,6 +281,10 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 	
 	@Override public void onCharacteristicRead(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int gattStatus)
 	{
+		final UUID uuid = characteristic.getUuid();
+		m_logger.i_native(m_logger.charName(uuid));
+		m_logger.log_status_native(m_device.getMacAddress(), gattStatus);
+
 		final byte[] value = characteristic.getValue() == null ? null : characteristic.getValue().clone();
 
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
@@ -290,10 +298,6 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 
 	private void onCharacteristicRead_updateThread(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int gattStatus, final byte[] value)
 	{
-		final UUID uuid = characteristic.getUuid();
-		m_logger.i(m_logger.charName(uuid));
-		m_logger.log_status(gattStatus);
-
 		final P_Task_Read readTask = m_queue.getCurrent(P_Task_Read.class, m_device);
 
 		if( readTask != null && readTask.isFor(characteristic) )
@@ -316,6 +320,10 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 
 	@Override public void onCharacteristicWrite(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int gattStatus)
 	{
+		final UUID uuid = characteristic.getUuid();
+		m_logger.i_native(m_logger.charName(uuid));
+		m_logger.log_status_native(m_device.getMacAddress(), gattStatus);
+
 		final byte[] data = characteristic.getValue();
 
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
@@ -329,10 +337,6 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 
 	private void onCharacteristicWrite_updateThread(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final byte[] data, final int gattStatus)
 	{
-		final UUID uuid = characteristic.getUuid();
-		m_logger.i(m_logger.charName(uuid));
-		m_logger.log_status(gattStatus);
-
 		final P_Task_Write task = m_queue.getCurrent(P_Task_Write.class, m_device);
 
 		if (task != null && task.isFor(characteristic) )
@@ -391,6 +395,8 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 	
 	@Override public void onReliableWriteCompleted(final BluetoothGatt gatt, final int gattStatus)
 	{
+		m_logger.log_status_native(m_device.getMacAddress(), gattStatus);
+
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -402,8 +408,6 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 
 	private void onReliableWriteCompleted_updateThread(final BluetoothGatt gatt, final int gattStatus)
 	{
-		m_logger.log_status(gattStatus);
-
 		final P_Task_ExecuteReliableWrite task = m_queue.getCurrent(P_Task_ExecuteReliableWrite.class, m_device);
 
 		if( task != null )
@@ -418,6 +422,9 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 	
 	@Override public void onReadRemoteRssi(final BluetoothGatt gatt, final int rssi, final int gattStatus)
 	{
+		m_logger.log_status_native(m_device.getMacAddress(), gattStatus);
+		m_logger.d_native(String.format("BleDevice %s received rssi value of %d", m_device.getMacAddress(), rssi));
+
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -448,6 +455,10 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 	
 	@Override public void onDescriptorWrite(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int gattStatus)
 	{
+		final UUID uuid = descriptor.getUuid();
+		m_logger.i_native(m_logger.descriptorName(uuid));
+		m_logger.log_status_native(m_device.getMacAddress(), gattStatus);
+
 		final byte[] data = descriptor.getValue();
 
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
@@ -462,8 +473,6 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 	private void onDescriptorWrite_updateThread(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final byte[] data, final int gattStatus)
 	{
 		final UUID uuid = descriptor.getUuid();
-		m_logger.i(m_logger.descriptorName(uuid));
-		m_logger.log_status(gattStatus);
 
 		final P_Task_WriteDescriptor task_write = m_queue.getCurrent(P_Task_WriteDescriptor.class, m_device);
 
@@ -488,6 +497,10 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 
 	@Override public void onDescriptorRead(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int gattStatus)
 	{
+		final UUID uuid = descriptor.getUuid();
+		m_logger.i_native(m_logger.descriptorName(uuid));
+		m_logger.log_status_native(m_device.getMacAddress(), gattStatus);
+
 		final byte[] data = descriptor.getValue();
 
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
@@ -534,6 +547,9 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 	
 	@Override public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic)
 	{
+		final UUID characteristicUuid = characteristic.getUuid();
+		m_logger.d_native("characteristic=" + characteristicUuid.toString());
+
 		final byte[] value = characteristic.getValue() == null ? null : characteristic.getValue().clone();
 
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
@@ -549,8 +565,6 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 	{
 		final UUID characteristicUuid = characteristic.getUuid();
 		final UUID serviceUuid = characteristic.getService().getUuid();
-
-		m_logger.d("characteristic=" + characteristicUuid.toString());
 
 		m_device.getPollManager().onCharacteristicChangedFromNativeNotify(serviceUuid, characteristicUuid, value);
 	}
@@ -618,6 +632,8 @@ final class P_BleDevice_Listeners extends BluetoothGattCallback
 
 	@Override public void onMtuChanged(final BluetoothGatt gatt, final int mtu, final int gattStatus)
 	{
+		m_logger.i_native(String.format("BleDevice %s negotiated an mtu size of %d", m_device.getMacAddress(), mtu));
+		m_logger.log_status_native(m_device.getMacAddress(), gattStatus);
 		m_device.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()

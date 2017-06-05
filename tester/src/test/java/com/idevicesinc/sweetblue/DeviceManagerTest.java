@@ -19,7 +19,7 @@ public class DeviceManagerTest extends BaseBleUnitTest
     {
         final long m_timeStarted = System.currentTimeMillis();
         final Semaphore s = new Semaphore(0);
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_mgr.setConfig(m_config);
         new Thread(new Runnable()
         {

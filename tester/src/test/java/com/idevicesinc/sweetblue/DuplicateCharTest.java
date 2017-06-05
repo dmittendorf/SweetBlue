@@ -202,7 +202,7 @@ public class DuplicateCharTest extends BaseBleUnitTest
                 return new MultipleCharGatt(device);
             }
         };
-        config.loggingEnabled = true;
+        config.logOptions = LogOptions.ALL_ON;
         return config;
     }
 

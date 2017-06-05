@@ -299,7 +299,7 @@ public class ScanTest extends BaseBleUnitTest
 
         final BleDevice device2;
 
-        m_mgr.setListener_Discovery(new BleManager.DiscoveryListener()
+        m_mgr.setListener_Discovery(new DiscoveryListener()
         {
             @Override public void onEvent(DiscoveryEvent e)
             {
@@ -320,7 +320,7 @@ public class ScanTest extends BaseBleUnitTest
 
         m_mgr.setListener_State(new ManagerStateListener()
         {
-            @Override public void onEvent(BleManager.StateListener.StateEvent e)
+            @Override public void onEvent(ManagerStateListener.StateEvent e)
             {
                 if (e.didEnter(BleManagerState.SCANNING))
                 {
@@ -386,7 +386,7 @@ public class ScanTest extends BaseBleUnitTest
                 final AtomicLong time = new AtomicLong();
                 m_mgr.setListener_State(new ManagerStateListener()
                 {
-                    @Override public void onEvent(BleManager.StateListener.StateEvent e)
+                    @Override public void onEvent(ManagerStateListener.StateEvent e)
                     {
                         if (e.didExit(BleManagerState.SCANNING))
                         {

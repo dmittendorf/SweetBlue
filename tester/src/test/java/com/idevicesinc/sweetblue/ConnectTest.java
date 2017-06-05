@@ -33,7 +33,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
 
         doConnectCreatedDeviceTest(m_config);
 
@@ -91,7 +91,7 @@ public class ConnectTest extends BaseBleUnitTest
         };
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
 
         doConnectDiscoveredDeviceTest(m_config);
 
@@ -159,7 +159,7 @@ public class ConnectTest extends BaseBleUnitTest
             }
         };
 
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
 
         doConnectDiscoveredMultipleDeviceTest(m_config);
 
@@ -228,7 +228,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_config.gattLayerFactory = new P_GattLayerFactory()
         {
             @Override public P_GattLayer newInstance(BleDevice device)
@@ -295,7 +295,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_config.gattLayerFactory = new P_GattLayerFactory()
         {
             @Override public P_GattLayer newInstance(BleDevice device)
@@ -318,7 +318,7 @@ public class ConnectTest extends BaseBleUnitTest
 
         final Semaphore s = new Semaphore(0);
 
-        m_mgr.setListener_ConnectionFail(new BleDevice.DefaultConnectionFailListener()
+        m_mgr.setListener_ConnectionFail(new DefaultDeviceConnectionFailListener()
         {
             @Override public Please onEvent(ConnectionFailEvent e)
             {
@@ -331,14 +331,14 @@ public class ConnectTest extends BaseBleUnitTest
             }
         });
 
-        m_mgr.setListener_Discovery(new BleManager.DiscoveryListener()
+        m_mgr.setListener_Discovery(new DiscoveryListener()
         {
             @Override public void onEvent(DiscoveryEvent e)
             {
                 if (e.was(LifeCycle.DISCOVERED))
                 {
                     m_device = e.device();
-                    m_device.connect(new BleDevice.StateListener()
+                    m_device.connect(new DeviceStateListener()
                     {
                         @Override public void onEvent(StateEvent e)
                         {
@@ -363,7 +363,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_config.gattLayerFactory = new P_GattLayerFactory()
         {
             @Override public P_GattLayer newInstance(BleDevice device)
@@ -424,7 +424,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_config.gattLayerFactory = new P_GattLayerFactory()
         {
             @Override public P_GattLayer newInstance(BleDevice device)
@@ -487,7 +487,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_config.gattLayerFactory = new P_GattLayerFactory()
         {
             @Override public P_GattLayer newInstance(BleDevice device)
@@ -576,7 +576,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_config.gattLayerFactory = new P_GattLayerFactory()
         {
             @Override public P_GattLayer newInstance(BleDevice device)
@@ -651,7 +651,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_config.gattLayerFactory = new P_GattLayerFactory()
         {
             @Override public P_GattLayer newInstance(BleDevice device)
@@ -716,7 +716,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
 
         doDisconnectDuringServiceDiscoveryTest(m_config);
 
@@ -773,7 +773,7 @@ public class ConnectTest extends BaseBleUnitTest
         m_device = null;
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
 
         doConnectThenDisconnectTest(m_config);
 

@@ -158,6 +158,8 @@ class P_BleServer_Listeners extends BluetoothGattServerCallback
 
 	@Override public void onConnectionStateChange(final BluetoothDevice device, final int gattStatus, final int newState)
 	{
+		m_logger.log_status_native(m_server.getMacAddress(), gattStatus, m_logger.gattConn(newState));
+
 		m_server.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -169,8 +171,6 @@ class P_BleServer_Listeners extends BluetoothGattServerCallback
 
     private void onConnectionStateChange_updateThread(final BluetoothDevice device, final int gattStatus, final int newState)
 	{
-		m_logger.log_status(gattStatus, m_logger.gattConn(newState));
-
 		if( newState == BluetoothProfile.STATE_DISCONNECTED )
 		{
 			m_server.m_nativeWrapper.updateNativeConnectionState(device.getAddress(), newState);
@@ -264,6 +264,8 @@ class P_BleServer_Listeners extends BluetoothGattServerCallback
 
 	@Override public void onServiceAdded(final int gattStatus, final BluetoothGattService service)
 	{
+		m_logger.log_status_native(m_server.getMacAddress(), gattStatus);
+
 		m_server.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -349,6 +351,8 @@ class P_BleServer_Listeners extends BluetoothGattServerCallback
 
 	@Override public void onCharacteristicReadRequest(final BluetoothDevice device, final int requestId, final int offset, final BluetoothGattCharacteristic characteristic)
 	{
+		m_logger.i_native("characteristic=" + characteristic.getUuid());
+
 		m_server.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -360,6 +364,8 @@ class P_BleServer_Listeners extends BluetoothGattServerCallback
 
 	@Override public void onDescriptorReadRequest(final BluetoothDevice device, final int requestId, final int offset, final BluetoothGattDescriptor descriptor)
 	{
+		m_logger.i_native("descriptor=" + descriptor.getUuid());
+
 		m_server.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -426,6 +432,8 @@ class P_BleServer_Listeners extends BluetoothGattServerCallback
 
 	@Override public void onCharacteristicWriteRequest(final BluetoothDevice device, final int requestId, final BluetoothGattCharacteristic characteristic, final boolean preparedWrite, final boolean responseNeeded, final int offset, final byte[] value)
 	{
+		m_logger.i_native("characteristic=" + characteristic.getUuid());
+
 		m_server.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -437,6 +445,8 @@ class P_BleServer_Listeners extends BluetoothGattServerCallback
 
 	@Override public void onDescriptorWriteRequest( final BluetoothDevice device, final int requestId, final BluetoothGattDescriptor descriptor, final boolean preparedWrite, final boolean responseNeeded, final int offset, final byte[] value)
 	{
+		m_logger.i_native("descriptor=" + descriptor.getUuid());
+
 		m_server.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()
@@ -452,6 +462,8 @@ class P_BleServer_Listeners extends BluetoothGattServerCallback
 
 	@Override public void onNotificationSent( final BluetoothDevice device, final int gattStatus )
 	{
+		m_logger.log_status_native(m_server.getMacAddress(), gattStatus);
+
 		m_server.getManager().getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
 			@Override public void run()

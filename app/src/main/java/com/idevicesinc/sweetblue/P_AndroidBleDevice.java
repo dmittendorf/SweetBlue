@@ -79,12 +79,12 @@ final class P_AndroidBleDevice implements P_NativeDeviceLayer {
 
     @Override
     public boolean removeBond() {
-        return Utils_Reflection.callBooleanReturnMethod(m_native_device, METHOD_NAME__REMOVE_BOND, getManager().m_config.loggingEnabled);
+        return Utils_Reflection.callBooleanReturnMethod(m_native_device, METHOD_NAME__REMOVE_BOND, getManager().m_config.logOptions.sweetBlueEnabled());
     }
 
     @Override
     public boolean cancelBond() {
-        return Utils_Reflection.callBooleanReturnMethod(m_native_device, METHOD_NAME__CANCEL_BOND_PROCESS, getManager().m_config.loggingEnabled);
+        return Utils_Reflection.callBooleanReturnMethod(m_native_device, METHOD_NAME__CANCEL_BOND_PROCESS, getManager().m_config.logOptions.sweetBlueEnabled());
     }
 
     private BleManager getManager()

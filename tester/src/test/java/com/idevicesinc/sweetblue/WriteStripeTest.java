@@ -32,7 +32,7 @@ public class WriteStripeTest extends BaseBleUnitTest
     @Test
     public void stripedWriteTest() throws Exception
     {
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_mgr.setConfig(m_config);
 
         final Semaphore s = new Semaphore(0);
@@ -75,7 +75,7 @@ public class WriteStripeTest extends BaseBleUnitTest
     @Test
     public void stripedWriteDescriptorTest() throws Exception
     {
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
         m_mgr.setConfig(m_config);
 
         final Semaphore s = new Semaphore(0);

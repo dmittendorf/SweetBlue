@@ -118,7 +118,9 @@ final class P_BleManager_Listeners
                 }
                 else if (action.equals(BluetoothDevice.ACTION_UUID))
                 {
-                    m_mngr.getLogger().d("");
+                    // This seems to be some sort of service discovery, but only sends the UUIDs. This has been observed to happen after bonding a device
+                    // which can happen without being connected.
+//                    m_mngr.getLogger().d("");
                 }
 
                 BleDevice device = m_mngr.getDevice(device_native.getAddress());
@@ -190,7 +192,7 @@ final class P_BleManager_Listeners
 
     private void onDeviceFound_classic(Context context, Intent intent)
     {
-        // If this was discovered via the hack to show the bond popup, then do not propogate this
+        // If this was discovered via the hack to show the bond popup, then do not propagate this
         // any further, as this scan is JUST to get the dialog to pop up (rather than show in the notification area)
         P_Task_BondPopupHack hack = m_mngr.getTaskQueue().getCurrent(P_Task_BondPopupHack.class, m_mngr);
 
@@ -227,7 +229,7 @@ final class P_BleManager_Listeners
         final int newNativeState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
 
         int logLevel = newNativeState == BluetoothAdapter.ERROR || previousNativeState == BluetoothAdapter.ERROR ? Log.WARN : Log.INFO;
-        m_mngr.getLogger().log(logLevel, "previous=" + m_mngr.getLogger().gattBleState(previousNativeState) + " new=" + m_mngr.getLogger().gattBleState(newNativeState));
+        m_mngr.getLogger().log_native(logLevel, null, "previous=" + m_mngr.getLogger().gattBleState(previousNativeState) + " new=" + m_mngr.getLogger().gattBleState(newNativeState));
 
         if (Utils.isMarshmallow())
         {
@@ -394,8 +396,9 @@ final class P_BleManager_Listeners
     {
         final int previousState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
         final int newState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+        final BluetoothDevice device_native = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
         int logLevel = newState == BluetoothDevice.ERROR || previousState == BluetoothDevice.ERROR ? Log.WARN : Log.INFO;
-        m_mngr.getLogger().log(logLevel, "previous=" + m_mngr.getLogger().gattBondState(previousState) + " new=" + m_mngr.getLogger().gattBondState(newState));
+        m_mngr.getLogger().log_native(logLevel, device_native.getAddress(), "previous=" + m_mngr.getLogger().gattBondState(previousState) + " new=" + m_mngr.getLogger().gattBondState(newState));
 
         final int failReason;
 
@@ -406,7 +409,7 @@ final class P_BleManager_Listeners
 
             if (failReason != BleStatuses.BOND_SUCCESS)
             {
-                m_mngr.getLogger().w(m_mngr.getLogger().gattUnbondReason(failReason));
+                m_mngr.getLogger().w_native(m_mngr.getLogger().gattUnbondReason(failReason));
             }
         }
         else
@@ -414,7 +417,6 @@ final class P_BleManager_Listeners
             failReason = BleStatuses.BOND_FAIL_REASON_NOT_APPLICABLE;
         }
 
-        final BluetoothDevice device_native = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
         onNativeBondStateChanged(device_native, previousState, newState, failReason);
     }

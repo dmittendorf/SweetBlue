@@ -2,10 +2,12 @@ package com.idevicesinc.sweetblue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 final class P_TaskQueue
 {
@@ -515,6 +517,11 @@ final class P_TaskQueue
 		if( m_logger.isEnabled() )
 		{
 			m_logger.i(this.toString());
+			// TODO - Remove this when done testing!!
+			if (!m_mngr.getPostManager().isOnSweetBlueThread())
+			{
+				Log.i("P_Task_Queue", "", new Exception());
+			}
 		}
 	}
 	

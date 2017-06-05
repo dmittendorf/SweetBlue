@@ -140,7 +140,7 @@ public class MainActivity extends Activity
         mLogger = new DebugLogger(250);
 
         BleManagerConfig config = new BleManagerConfig();
-        config.loggingEnabled = true;
+        config.logOptions = LogOptions.ALL_ON;
         config.logger = mLogger;
         config.scanApi = BleScanApi.POST_LOLLIPOP;
         config.runOnMainThread = false;

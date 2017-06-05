@@ -328,7 +328,14 @@ public final class BleManager
 
 	private void initLogger(BleManager mgr)
 	{
-		m_logger = new P_Logger(mgr, m_config.debugThreadNames, m_config.uuidNameMaps, m_config.loggingEnabled, m_config.logger);
+		if (m_logger == null)
+		{
+			m_logger = new P_Logger(mgr, m_config.debugThreadNames, m_config.uuidNameMaps, m_config.logOptions.enabled(), m_config.logger);
+		}
+		else
+		{
+			m_logger.setBleManager(this);
+		}
 	}
 
 	private void initConfigDependentMembers()
@@ -1102,7 +1109,7 @@ public final class BleManager
 
 	/**
 	 * Fires a callback to {@link AssertListener} if condition is false. Will post a {@link android.util.Log#ERROR}-level
-	 * message with a stack trace to the console as well if {@link BleManagerConfig#loggingEnabled} is true.
+	 * message with a stack trace to the console as well if {@link BleManagerConfig#logOptions} is not {@link LogOptions#OFF}.
 	 */
 	@Advanced
 	public final boolean ASSERT(boolean condition)
@@ -1121,12 +1128,12 @@ public final class BleManager
 			Exception dummyException = null;
 			message = message != null ? message : "";
 
-			if( m_config.loggingEnabled || m_assertionListener != null )
+			if( m_config.logOptions.sweetBlueEnabled() || m_assertionListener != null )
 			{
 				dummyException = new Exception();
 			}
 
-			if( m_config.loggingEnabled )
+			if( m_config.logOptions.sweetBlueEnabled() )
 			{
 				Log.e(BleManager.class.getSimpleName(), "ASSERTION FAILED " + message, dummyException);
 			}
@@ -1592,20 +1599,27 @@ public final class BleManager
 		stopScan();
 	}
 
-	final void stopScan_private(E_Intent intent)
+	final void stopScan_private(final E_Intent intent)
 	{
 		m_scanManager.resetTimeNotScanning();
 
 		// Specifically stop the scan
 		//m_config.bleScanner.stopLeScan(m_listeners.m_scanCallback_preLollipop);
 
-		if( !m_taskQueue.succeed(P_Task_Scan.class, this) )
+		getPostManager().runOrPostToUpdateThread(new Runnable()
 		{
-			m_taskQueue.clearQueueOf(P_Task_Scan.class, this);
-		}
+			@Override
+			public void run()
+			{
+				if( !m_taskQueue.succeed(P_Task_Scan.class, BleManager.this) )
+				{
+					m_taskQueue.clearQueueOf(P_Task_Scan.class, BleManager.this);
+				}
 
-		m_stateTracker.remove(BleManagerState.STARTING_SCAN, E_Intent.INTENTIONAL, BleStatuses.GATT_STATUS_NOT_APPLICABLE);
-		m_stateTracker.remove(BleManagerState.SCANNING, intent, BleStatuses.GATT_STATUS_NOT_APPLICABLE);
+				m_stateTracker.remove(BleManagerState.STARTING_SCAN, E_Intent.INTENTIONAL, BleStatuses.GATT_STATUS_NOT_APPLICABLE);
+				m_stateTracker.remove(BleManagerState.SCANNING, intent, BleStatuses.GATT_STATUS_NOT_APPLICABLE);
+			}
+		});
 	}
 
 	/**

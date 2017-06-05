@@ -42,7 +42,7 @@ public class ConnectBlitzer extends BaseTester<MainActivity>
             }
         };
         config.useGattRefresh = false;
-        config.loggingEnabled = true;
+        config.logOptions = LogOptions.ALL_ON;
         config.runOnMainThread = false;
         return config;
     }

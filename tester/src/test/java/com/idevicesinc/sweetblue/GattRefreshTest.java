@@ -21,7 +21,7 @@ public class GattRefreshTest extends BaseBleUnitTest
     {
 
         m_config.runOnMainThread = false;
-        m_config.loggingEnabled = true;
+        m_config.logOptions = LogOptions.ALL_ON;
 
         m_mgr.setConfig(m_config);
 

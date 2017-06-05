@@ -491,7 +491,7 @@ public class BleScanTest extends BaseTester<BleScanActivity>
     @Override BleManagerConfig getInitialConfig()
     {
         BleManagerConfig config = new BleManagerConfig();
-        config.loggingEnabled = true;
+        config.logOptions = LogOptions.ALL_ON;
         return config;
     }
 }
