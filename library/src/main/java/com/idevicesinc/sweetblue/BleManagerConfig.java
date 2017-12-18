@@ -326,6 +326,9 @@ public class BleManagerConfig extends BleDeviceConfig
 	@Nullable(Prevalence.NORMAL)
 	public Interval autoScanPauseTimeWhileAppIsBackgrounded = Interval.DISABLED;
 
+	@Nullable(Prevalence.NORMAL)
+	public ScanOptions.Priority autoScanPriority 			= ScanOptions.Priority.TRIVIAL;
+
 	/**
 	 * Default is {@link #DEFAULT_MINIMUM_SCAN_TIME} seconds - Minimum amount of time in seconds that the library strives to give to a scanning operation.
 	 */
